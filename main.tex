@@ -1,0 +1,189 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, total={6.4in, 8.53in}]{geometry}
+\usepackage{amsmath, tikz, amsfonts, bbm, mathrsfs, graphicx, amssymb, amsthm, hyperref, centernot, enumerate, bbm, xcolor, lmodern, mathdots, amsfonts, graphicx}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{booktabs}
+
+\title{MAT1856/APM466 Assignment 1}
+\author{Sonia Zeng, Student \#: 1006683082} \date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Fundamental Questions - 25 points}
+
+\begin{enumerate}
+    \item
+    \begin{enumerate}
+        % (a) (1 point) Why do governments issue bonds and not simply print more money?
+        \item It is because printing money can lead to inflation and economic instability, while issuing bonds provide a controlled borrowing mechanism without devaluing the currency.
+
+        % (b) (2 points) Give a hypothetical example of why the long-term part of a yield curve might flatten.
+        \item The long-term part of a yield curve might flatten if investors expect slower economic growth and lower future interest rates, leading them to buy long-term bonds to lock in current rate, which drives their yields closer to short-term yields.
+
+        % (c) (2 points) Explain what quantitative easing is and how the (US) Fed has employed this since the beginning of the COVID-19 pandemic.
+        \item Quantitative easing is monetary policy where a central bank purchases securities on a open market, where Fed purchased 56\% of the Treasury issuance of securities during the pandemic \cite{CRS2020} to lower long-term interest rates and stimulate the economy. 
+    \end{enumerate}
+
+    % Q2 (10 points) We asked you to pull data for all bonds, but if you’d like to construct a yield a “0-5 year” yield & spot curves, as the government of Canada issues all of its bonds with a semi-annual coupon, when bootstrapping you’ll only need 10 or 11 bonds to perform this task. 
+    
+    % Ideally, the bonds in any yield curve should be consistent in some way with one another so that yields are easier to compare. Select (list) 10 bonds that you will use to construct the aforementioned curves with an explanation of why you selected those 10 bonds based on the characteristics we asked you to collect for each bond (coupon, issue date, maturity date, etc.). 
+    
+    % Note: 1) There is a unique ideal answer, 2) To easily refer to a bond, please use the following convention: “CAN 2.5 Jun 24” refers to the Canadian Government bond with a maturity in June 24 and a coupon of 2.5 .
+    \item I selected the following 10 bonds:
+
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{c|c|c|c|c}
+            \hline
+            \textbf{Name} & \textbf{ISIN} & \textbf{Coupon (\%)} & \textbf{Maturity Date} & \textbf{Maturity Bucket} \\
+            \hline
+            CAN 3.500 Aug 01 & CA135087Q640 & 3.500 & 2025-08-01 & 0-1Y \\
+            CAN 3.000 Oct 01 & CA135087P246 & 3.000 & 2025-10-01 & 0-1Y \\
+            CAN 3.000 Apr 01 & CA135087P816 & 3.000 & 2026-04-01 & 1-2Y \\
+            CAN 3.250 Nov 01 & CA135087S398 & 3.250 & 2026-11-01 & 1-2Y \\
+            CAN 3.000 Feb 01 & CA135087S547 & 3.000 & 2027-02-01 & 2-3Y \\
+            CAN 3.245 Aug 24 & CA135087P733 & 3.245 & 2027-08-24 & 2-3Y \\
+            CAN 2.750 Sept 01 & CA135087N837 & 2.750 & 2027-09-01 & 2-3Y \\
+            CAN 3.500 Mar 01 & CA135087P576 & 3.500 & 2028-03-01 & 3-4Y \\
+            CAN 3.250 Sept 01 & CA135087Q491 & 3.250 & 2028-09-01 & 3-4Y \\
+            CAN 3.500 Sept 01 & CA135087R895 & 3.500 & 2029-09-01 & 4-5Y \\
+            \hline
+        \end{tabular}
+        \label{tab:bond_selection}
+    \end{table}
+
+    The selection includes a diverse mix of maturities, all within five years from January 20, 2025, to avoid clustering, and also prioritizes consistent coupon rates (primarily 3.000\%, 3.250\%, and 3.500\%), ensuring smooth yield and spot curve construction. This strategy balances maturity variety with comparable yields, enhancing liquidity, market representation, and the accuracy of interpolation.
+
+
+    %Q3 (10 points) In a few plain English sentences, in general, if we have several stochastic processes for which each process represents a unique point along a stochastic curve (assume points/processes are evenly distributed along the curve), what do the eigenvalues and eigenvectors associated with the covariance matrix of those stochastic processes tell us?
+    % (Hint: This is called Principal Component Analysis)
+    \item Eigenvalues indicate how much variance each principal component captures, with larger values representing more variance. Additionally, eigenvectors define the directions of maximum data variation, with the first few components capturing the most significant trends along the stochastic curve.
+\end{enumerate}
+
+
+
+\section*{Empirical Questions - 75 points} 
+
+\begin{enumerate}
+\setcounter{enumi}{3} 
+    \item
+    \begin{enumerate}
+        % First, calculate each of your 10 selected bonds’ yield (ytm). 
+        % Then provide a well-labeled plot with a 5-year yield curve (ytm curve) corresponding to each day of data superimposed on-top of each other.          You may use any interpolation technique you deem appropriate provided you include a reasonable explanation for the technique used.
+        \item Yield to Maturity (YTM) for each of 10 selected bonds  are calculated using their \textbf{dirty prices} (clean price plus accrued interest). The YTM is computed with the \textbf{semi-annual coupon} formula using the \textbf{Newton-Raphson method} for solving. After calculating YTMs for each bond on different dates, the \textbf{PCHIP interpolation} method is used to smooth the data and generate continuous yield curves to ensure a smooth, monotonic curve without unrealistic oscillations. The result is a plot showing how the 5-year yield curve evolves over time, with each date's curve superimposed in Figure \ref{fig:ytm}.
+        
+        \begin{figure}[htbp]
+            \centering
+            \begin{minipage}{0.499\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{figures/ytm.png}
+                \caption{Yield-to-Maturity (YTM) Curves}
+                \label{fig:ytm}
+            \end{minipage}
+            \hfill
+            \begin{minipage}{0.49\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{figures/spot.png}
+                \caption{Spot Rate Curves}
+                \label{fig:spot}
+            \end{minipage}
+        \end{figure}
+                
+        \item To derive the spot curve using bootstrapping, it is started by calculating the spot rate for the shortest maturity bond (typically a 1-year bond) using its \textbf{dirty price} and \textbf{cash flows}. For longer maturity bonds, use the previously calculated spot rates to discount the earlier cash flows, and solve for the spot rate for the remaining maturity. This process is repeated for each bond and maturity, progressively calculating the spot rates for longer maturities based on earlier ones. The resulting spot rates for each date are stored in a dictionary, which can then be plotted to visualize the spot rate curve for each day, with maturities on the x-axis and spot rates on the y-axis as in Figure \ref{fig:spot}.
+        
+        \item To derive the 1-year forward curve with terms ranging from 2-5 years, begin by extracting the relevant spot rates for maturities from 1 to 5 years. For each date, calculate the forward rate for each period (\texttt{1y1y}, \texttt{1y2y}, \texttt{1y3y}, and \texttt{1y4y}) by using the formula:
+        $$ F_{t, t+n}=\left(\frac{\left(1+S_{t+n}\right)^{2(t+n)}}{\left(1+S_t\right)^{2 t}}\right)^{\frac{1}{2 n}}-1 $$
+        Where $S_t$ is the spot rate for year $t$ and $S_{t+n}$ is the spot rate for year $t+n$. This formula computes the forward rate between year $t$ and $t + n$. Repeat this process for each date, storing the calculated forward rates. Finally, organize the results into a dataframe with dates as rows and forward rates (\texttt{1y1y}, \texttt{1y2y}, etc.) as columns, then plot the 1-year forward rate curves for each day superimposed on each other as in Figure \ref{fig:forward}.
+
+        \begin{figure} [h]
+            \centering
+            \includegraphics[width=0.6\linewidth]{figures/forward.png}
+            \caption{Forward Rate Curves}
+            \label{fig:forward}
+        \end{figure}
+            
+        \end{enumerate}
+        \item These are the two covariance matrices for both yield log-returns and forward rate log-returns:
+
+        \centering Covariance Matrix for Yield Log-Returns:
+        \[
+        \begin{array}{r|ccccc}
+        \toprule
+         & \text{1 Years} & \text{2 Years} & \text{3 Years} & \text{4 Years} & \text{5 Years} \\
+        \midrule
+        \text{1 Years} & 0.054782 & 0.000189 & 0.000169 & 0.000126 & -0.000161 \\
+        \text{2 Years} & 0.000189 & 0.000530 & 0.000566 & 0.000580 & 0.000535 \\
+        \text{3 Years} & 0.000169 & 0.000566 & 0.000611 & 0.000628 & 0.000574 \\
+        \text{4 Years} & 0.000126 & 0.000580 & 0.000628 & 0.000677 & 0.000593 \\
+        \text{5 Years} & -0.000161 & 0.000535 & 0.000574 & 0.000593 & 0.000577 \\
+        \bottomrule
+        \end{array}
+        \]
+        
+        \centering Covariance Matrix for Forward Rate Log-Returns:
+        \[
+        \begin{array}{r|cccc}
+        \toprule
+         & \text{1y1y} & \text{1y2y} & \text{1y3y} & \text{1y4y} \\
+        \midrule
+        \text{1y1y} & 0.004143 & 0.001111 & 0.000700 & 0.000540 \\
+        \text{1y2y} & 0.001111 & 0.000377 & 0.000291 & 0.000241 \\
+        \text{1y3y} & 0.000700 & 0.000291 & 0.000263 & 0.000219 \\
+        \text{1y4y} & 0.000540 & 0.000241 & 0.000219 & 0.000201 \\
+        \bottomrule
+        \end{array}
+        \]
+    
+        \raggedright
+        \item These are the eigenvalues and eigenvectors for the two matrices.
+        
+        \textbf{Eigenvalues for Yield Covariance Matrix:}
+        \[
+        [5.47835140 \times 10^{-2}, 2.34048327 \times 10^{-3}, 3.12646046 \times 10^{-5}, 1.89860905 \times 10^{-5}, 2.36196315 \times 10^{-6}]
+        \]
+        
+        \textbf{Eigenvectors for Yield Covariance Matrix:}
+        \[
+        \begin{bmatrix}
+        -9.99981942 \times 10^{-1} & 3.11490647 \times 10^{-3} & -3.75866521 \times 10^{-3} & 3.48205066 \times 10^{-3} & -4.00732877 \times 10^{-4} \\
+        -3.50922352 \times 10^{-3} & -4.72450271 \times 10^{-1} & -5.77998261 \times 10^{-2} & -5.70515943 \times 10^{-1} & 6.69290046 \times 10^{-1} \\
+        -3.15398914 \times 10^{-3} & -5.08416877 \times 10^{-1} & 8.26281548 \times 10^{-2} & -4.46003664 \times 10^{-1} & -7.31953313 \times 10^{-1} \\
+        -2.36509421 \times 10^{-3} & -5.30026123 \times 10^{-1} & 6.58095766 \times 10^{-1} & 5.19774486 \times 10^{-1} & 1.25742445 \times 10^{-1} \\
+        2.87393499 \times 10^{-3} & -4.87201835 \times 10^{-1} & -7.46141812 \times 10^{-1} & 4.53226930 \times 10^{-1} & -2.19967876 \times 10^{-2}
+        \end{bmatrix}
+        \]
+        
+        \textbf{Eigenvalues for Forward Rate Covariance Matrix:}
+        \[
+        [4.66158800 \times 10^{-3}, 3.09171104 \times 10^{-4}, 2.87808034 \times 10^{-6}, 1.00616930 \times 10^{-5}]
+        \]
+        
+        \textbf{Eigenvectors for Forward Rate Covariance Matrix:}
+        \[
+        \begin{bmatrix}
+        0.93916729 & 0.31551034 & 0.13048043 & 0.03732123 \\
+        0.26303726 & -0.41244323 & -0.86577012 & -0.10556556 \\
+        0.17368179 & -0.61697301 & 0.42465216 & -0.63941339 \\
+        0.13642149 & -0.59134433 & 0.23040725 & 0.76066652
+        \end{bmatrix}
+        \]
+        
+        \textbf{Explanation:} The first eigenvalue of the yield covariance matrix (0.054783514) represents the largest variance component, and its associated eigenvector indicates the principal direction in which the yield curve exhibits the greatest variation. This implies that the associated eigenvector reflects the dominant risk factor driving the yield curve's behavior.
+
+        
+    \end{enumerate}
+
+\newpage
+\bibliographystyle{unsrt}
+\bibliography{mybib}
+\noindent\textbf{GitHub Link:} \url{https://github.com/Soniazdp/APM466}
+
+
+\end{document}
+
+
